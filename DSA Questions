@@ -1,0 +1,1726 @@
+ 1] Write a program to create a MST from a given Graph.
+
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+class Graph {
+public:
+    int vertices;
+    vector<vector<pair<int, int>>> adjList; // (neighbor, weight)
+
+    Graph(int V) {
+        vertices = V;
+        adjList.resize(V);
+    }
+
+    void addEdge(int u, int v, int weight) {
+        adjList[u].emplace_back(v, weight);
+        adjList[v].emplace_back(u, weight);
+    }
+
+    int primMST() {
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> minHeap;
+        vector<bool> visited(vertices, false);
+
+        minHeap.push({0, 0}); // (weight, vertex)
+        int mstCost = 0;
+
+        while (!minHeap.empty()) {
+            int weight = minHeap.top().first;
+            int currentVertex = minHeap.top().second;
+            minHeap.pop();
+
+            if (visited[currentVertex]) {
+                continue;
+            }
+
+            visited[currentVertex] = true;
+            mstCost += weight;
+
+            for (const auto& neighbor : adjList[currentVertex]) {
+                int neighborVertex = neighbor.first;
+                int edgeWeight = neighbor.second;
+
+                if (!visited[neighborVertex]) {
+                    minHeap.push({edgeWeight, neighborVertex});
+                }
+            }
+        }
+
+        return mstCost;
+    }
+};
+
+int main() {
+    Graph g(5);
+
+    g.addEdge(0, 1, 2);
+    g.addEdge(0, 3, 8);
+    g.addEdge(1, 2, 3);
+    g.addEdge(1, 3, 5);
+    g.addEdge(1, 4, 7);
+    g.addEdge(2, 4, 1);
+    g.addEdge(3, 4, 4);
+
+    int mstCost = g.primMST();
+    cout << "Minimum Spanning Tree Cost: " << mstCost << endl;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+2]  Write a program to implement stack using linked list. Perform push, pop, count, is Empty, is  Full operations.
+
+#include <iostream>
+
+using namespace std;
+
+ 
+struct Node {
+    int data;
+    Node* next;
+    
+    Node(int value) : data(value), next(nullptr) {}
+};
+
+ 
+class Stack {
+private:
+    Node* top;
+    int capacity;
+    int size;
+
+public:
+    Stack(int cap) : top(nullptr), capacity(cap), size(0) {}
+
+ 
+    void push(int value) {
+        if (isFull()) {
+            cout << "Stack overflow. Cannot push element " << value << "." << endl;
+            return;
+        }
+
+        Node* newNode = new Node(value);
+        newNode->next = top;
+        top = newNode;
+        size++;
+        cout << "Pushed " << value << " onto the stack." << endl;
+    }
+
+ 
+    void pop() {
+        if (isEmpty()) {
+            cout << "Stack underflow. Cannot pop from an empty stack." << endl;
+            return;
+        }
+
+        Node* temp = top;
+        top = top->next;
+        delete temp;
+        size--;
+        cout << "Popped an element from the stack." << endl;
+    }
+
+ 
+    int count() const {
+        return size;
+    }
+
+ 
+    bool isEmpty() const {
+        return top == nullptr;
+    }
+
+     
+    bool isFull() const {
+        return size == capacity;
+    }
+};
+
+int main() {
+    // Create a stack with a capacity of 5
+    Stack stack(5);
+
+ 
+    stack.push(10);
+    stack.push(20);
+    stack.push(30);
+
+    cout << "Stack Count: " << stack.count() << endl;
+    cout << "Is Stack Empty? " << (stack.isEmpty() ? "Yes" : "No") << endl;
+    cout << "Is Stack Full? " << (stack.isFull() ? "Yes" : "No") << endl;
+
+    stack.pop();
+    stack.pop();
+
+    cout << "Stack Count: " << stack.count() << endl;
+    cout << "Is Stack Empty? " << (stack.isEmpty() ? "Yes" : "No") << endl;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3]  Write a program to create a Max-Heap and perform basic operations on it.
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class MaxHeap {
+private:
+    vector<int> heap;
+
+ 
+    void heapifyUp(int index) {
+        while (index > 0) {
+            int parentIndex = (index - 1) / 2;
+            if (heap[index] > heap[parentIndex]) {
+                swap(heap[index], heap[parentIndex]);
+                index = parentIndex;
+            } else {
+                break;
+            }
+        }
+    }
+
+ 
+    void heapifyDown(int index) {
+        int leftChild = 2 * index + 1;
+        int rightChild = 2 * index + 2;
+        int largest = index;
+
+        if (leftChild < heap.size() && heap[leftChild] > heap[largest]) {
+            largest = leftChild;
+        }
+
+        if (rightChild < heap.size() && heap[rightChild] > heap[largest]) {
+            largest = rightChild;
+        }
+
+        if (largest != index) {
+            swap(heap[index], heap[largest]);
+            heapifyDown(largest);
+        }
+    }
+
+public:
+ 
+    void insert(int value) {
+        heap.push_back(value);
+        heapifyUp(heap.size() - 1);
+        cout << "Inserted " << value << " into the Max-Heap." << endl;
+    }
+
+ 
+    void deleteMax() {
+        if (heap.empty()) {
+            cout << "Heap is empty. Cannot delete maximum element." << endl;
+            return;
+        }
+
+        int maxValue = heap[0];
+        heap[0] = heap.back();
+        heap.pop_back();
+        heapifyDown(0);
+
+        cout << "Deleted maximum element " << maxValue << " from the Max-Heap." << endl;
+    }
+
+ 
+    void display() const {
+        cout << "Max-Heap: ";
+        for (int value : heap) {
+            cout << value << " ";
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    MaxHeap maxHeap;
+
+    maxHeap.insert(10);
+    maxHeap.insert(20);
+    maxHeap.insert(15);
+    maxHeap.insert(40);
+    maxHeap.insert(50);
+
+    maxHeap.display();
+
+    maxHeap.deleteMax();
+    maxHeap.display();
+
+    maxHeap.deleteMax();
+    maxHeap.display();
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+4]  Write a program to perform BFS on a graph using Queues.
+
+#include <iostream>
+#include <queue>
+#include <vector>
+
+using namespace std;
+
+class Graph {
+private:
+    int vertices;
+    vector<vector<int>> adjList;
+
+public:
+    Graph(int V) : vertices(V), adjList(V) {}
+
+    // Function to add an edge to the graph
+    void addEdge(int u, int v) {
+        adjList[u].push_back(v);
+        adjList[v].push_back(u);
+    }
+
+    // Function to perform Breadth-First Search on the graph
+    void bfs(int startVertex) {
+        vector<bool> visited(vertices, false);
+        queue<int> q;
+
+        visited[startVertex] = true;
+        q.push(startVertex);
+
+        cout << "BFS Traversal starting from vertex " << startVertex << ": ";
+
+        while (!q.empty()) {
+            int currentVertex = q.front();
+            cout << currentVertex << " ";
+            q.pop();
+
+            for (int neighbor : adjList[currentVertex]) {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    q.push(neighbor);
+                }
+            }
+        }
+
+        cout << endl;
+    }
+};
+
+int main() {
+    Graph g(6);
+
+    g.addEdge(0, 1);
+    g.addEdge(0, 2);
+    g.addEdge(1, 3);
+    g.addEdge(2, 4);
+    g.addEdge(2, 5);
+
+    // Perform BFS starting from vertex 0
+    g.bfs(0);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+5]  Write a menu driven program to Create a Binary Search tree(BST) 
+Traverse the tree in Inorder, Preorder and Postorder Maximum node
+
+#include <iostream>
+#include <cstdlib> // for std::rand and std::srand
+#include <ctime>   // for std::time
+using namespace std;
+
+// Node structure for the Binary Search Tree
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+
+    Node(int value) : data(value), left(nullptr), right(nullptr) {}
+};
+
+class BinarySearchTree {
+private:
+    Node* root;
+
+public:
+    BinarySearchTree() : root(nullptr) {}
+
+    // Function to insert a value into the BST
+    Node* insert(Node* current, int value) {
+        if (current == nullptr) {
+            return new Node(value);
+        }
+
+        if (value < current->data) {
+            current->left = insert(current->left, value);
+        } else if (value > current->data) {
+            current->right = insert(current->right, value);
+        }
+
+        return current;
+    }
+
+    void insert(int value) {
+        root = insert(root, value);
+        cout << "Inserted " << value << " into the Binary Search Tree." << endl;
+    }
+
+    // Function to perform Inorder traversal of the BST
+    void inorderTraversal(Node* current) {
+        if (current != nullptr) {
+            inorderTraversal(current->left);
+            cout << current->data << " ";
+            inorderTraversal(current->right);
+        }
+    }
+
+    void inorderTraversal() {
+        cout << "Inorder Traversal: ";
+        inorderTraversal(root);
+        cout << endl;
+    }
+
+    // Function to perform Preorder traversal of the BST
+    void preorderTraversal(Node* current) {
+        if (current != nullptr) {
+            cout << current->data << " ";
+            preorderTraversal(current->left);
+            preorderTraversal(current->right);
+        }
+    }
+
+    void preorderTraversal() {
+        cout << "Preorder Traversal: ";
+        preorderTraversal(root);
+        cout << endl;
+    }
+
+    // Function to perform Postorder traversal of the BST
+    void postorderTraversal(Node* current) {
+        if (current != nullptr) {
+            postorderTraversal(current->left);
+            postorderTraversal(current->right);
+            cout << current->data << " ";
+        }
+    }
+
+    void postorderTraversal() {
+        cout << "Postorder Traversal: ";
+        postorderTraversal(root);
+        cout << endl;
+    }
+
+    // Function to find the maximum node in the BST
+    Node* findMax(Node* current) {
+        while (current->right != nullptr) {
+            current = current->right;
+        }
+        return current;
+    }
+
+    void findMax() {
+        if (root == nullptr) {
+            cout << "Tree is empty. Cannot find maximum node." << endl;
+            return;
+        }
+
+        Node* maxNode = findMax(root);
+        cout << "Maximum Node in the Binary Search Tree: " << maxNode->data << endl;
+    }
+};
+
+int main() {
+    BinarySearchTree bst;
+
+    srand(static_cast<unsigned>(time(nullptr))); // Seed for random values
+
+    int choice, value;
+
+    do {
+        cout << "\nMenu:\n"
+             << "1. Insert a value into BST\n"
+             << "2. Inorder Traversal\n"
+             << "3. Preorder Traversal\n"
+             << "4. Postorder Traversal\n"
+             << "5. Find Maximum Node\n"
+             << "0. Exit\n"
+             << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert: ";
+                cin >> value;
+                bst.insert(value);
+                break;
+            case 2:
+                bst.inorderTraversal();
+                break;
+            case 3:
+                bst.preorderTraversal();
+                break;
+            case 4:
+                bst.postorderTraversal();
+                break;
+            case 5:
+                bst.findMax();
+                break;
+            case 0:
+                cout << "Exiting the program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Please enter a valid option.\n";
+        }
+
+    } while (choice != 0);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+6]  Write a program to represent a Graph using an adjacency matrix and print it.
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class Graph {
+private:
+    int vertices;
+    vector<vector<int>> adjacencyMatrix;
+
+public:
+    Graph(int V) : vertices(V), adjacencyMatrix(V, vector<int>(V, 0)) {}
+
+    // Function to add an edge to the graph
+    void addEdge(int u, int v) {
+        if (u >= 0 && u < vertices && v >= 0 && v < vertices) {
+            adjacencyMatrix[u][v] = 1;
+            adjacencyMatrix[v][u] = 1; // For undirected graph
+        } else {
+            cout << "Invalid vertices. Edge not added." << endl;
+        }
+    }
+
+    // Function to print the adjacency matrix
+    void printGraph() {
+        cout << "Adjacency Matrix:" << endl;
+        for (int i = 0; i < vertices; ++i) {
+            for (int j = 0; j < vertices; ++j) {
+                cout << adjacencyMatrix[i][j] << " ";
+            }
+            cout << endl;
+        }
+    }
+};
+
+int main() {
+    // Create a graph with 4 vertices
+    Graph graph(4);
+
+    // Add edges to the graph
+    graph.addEdge(0, 1);
+    graph.addEdge(0, 2);
+    graph.addEdge(1, 2);
+    graph.addEdge(2, 3);
+
+    // Print the adjacency matrix
+    graph.printGraph();
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+7]  Write a program to create a Min-Heap and perform basic operations on it.
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class MinHeap {
+private:
+    vector<int> heap;
+
+    // Helper function to maintain the Min-Heap property
+    void heapifyUp(int index) {
+        while (index > 0) {
+            int parentIndex = (index - 1) / 2;
+            if (heap[index] < heap[parentIndex]) {
+                swap(heap[index], heap[parentIndex]);
+                index = parentIndex;
+            } else {
+                break;
+            }
+        }
+    }
+
+    // Helper function to maintain the Min-Heap property after deleting the minimum element
+    void heapifyDown(int index) {
+        int leftChild = 2 * index + 1;
+        int rightChild = 2 * index + 2;
+        int smallest = index;
+
+        if (leftChild < heap.size() && heap[leftChild] < heap[smallest]) {
+            smallest = leftChild;
+        }
+
+        if (rightChild < heap.size() && heap[rightChild] < heap[smallest]) {
+            smallest = rightChild;
+        }
+
+        if (smallest != index) {
+            swap(heap[index], heap[smallest]);
+            heapifyDown(smallest);
+        }
+    }
+
+public:
+    // Function to insert an element into the Min-Heap
+    void insert(int value) {
+        heap.push_back(value);
+        heapifyUp(heap.size() - 1);
+        cout << "Inserted " << value << " into the Min-Heap." << endl;
+    }
+
+    // Function to delete the minimum element from the Min-Heap
+    void deleteMin() {
+        if (heap.empty()) {
+            cout << "Heap is empty. Cannot delete minimum element." << endl;
+            return;
+        }
+
+        int minValue = heap[0];
+        heap[0] = heap.back();
+        heap.pop_back();
+        heapifyDown(0);
+
+        cout << "Deleted minimum element " << minValue << " from the Min-Heap." << endl;
+    }
+
+    // Function to display the elements in the Min-Heap
+    void display() const {
+        cout << "Min-Heap: ";
+        for (int value : heap) {
+            cout << value << " ";
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    MinHeap minHeap;
+
+    minHeap.insert(10);
+    minHeap.insert(20);
+    minHeap.insert(15);
+    minHeap.insert(40);
+    minHeap.insert(50);
+
+    minHeap.display();
+
+    minHeap.deleteMin();
+    minHeap.display();
+
+    minHeap.deleteMin();
+    minHeap.display();
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+8]  Write a program using classes to evaluate of a Postfix expression using the stack.
+
+#include <iostream>
+#include <stack>
+#include <cctype>  // for isdigit function
+#include <cstdlib> // for atoi function
+
+using namespace std;
+
+class PostfixEvaluator {
+private:
+    stack<int> operandStack;
+
+    // Helper function to check if a character is an operator
+    bool isOperator(char ch) {
+        return (ch == '+' || ch == '-' || ch == '*' || ch == '/');
+    }
+
+    // Helper function to perform arithmetic operations
+    int performOperation(char operation, int operand1, int operand2) {
+        switch (operation) {
+            case '+':
+                return operand1 + operand2;
+            case '-':
+                return operand1 - operand2;
+            case '*':
+                return operand1 * operand2;
+            case '/':
+                if (operand2 != 0) {
+                    return operand1 / operand2;
+                } else {
+                    cerr << "Error: Division by zero." << endl;
+                    exit(1);
+                }
+            default:
+                cerr << "Error: Invalid operator." << endl;
+                exit(1);
+        }
+    }
+
+public:
+    // Function to evaluate a postfix expression
+    int evaluatePostfix(const string &postfixExpression) {
+        for (char ch : postfixExpression) {
+            if (isdigit(ch)) {
+                operandStack.push(ch - '0'); // Convert char to integer
+            } else if (isOperator(ch)) {
+                if (operandStack.size() < 2) {
+                    cerr << "Error: Insufficient operands for operator " << ch << "." << endl;
+                    exit(1);
+                }
+                int operand2 = operandStack.top();
+                operandStack.pop();
+                int operand1 = operandStack.top();
+                operandStack.pop();
+                int result = performOperation(ch, operand1, operand2);
+                operandStack.push(result);
+            }
+        }
+
+        if (operandStack.size() == 1) {
+            return operandStack.top();
+        } else {
+            cerr << "Error: Invalid postfix expression." << endl;
+            exit(1);
+        }
+    }
+};
+
+int main() {
+    PostfixEvaluator evaluator;
+
+    // Example postfix expression: "34*2+"
+    string postfixExpression;
+    cout << "Enter a postfix expression: ";
+    cin >> postfixExpression;
+
+    int result = evaluator.evaluatePostfix(postfixExpression);
+    cout << "Result of the postfix expression: " << result << endl;
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+9]  Write a program to check whether parentheses are balanced in an expression using a Stack
+
+#include <iostream>
+#include <stack>
+#include <string>
+
+using namespace std;
+
+bool areParenthesesBalanced(const string &expression) {
+    stack<char> charStack;
+
+    for (char ch : expression) {
+        if (ch == '(' || ch == '[' || ch == '{') {
+            charStack.push(ch);
+        } else if (ch == ')' || ch == ']' || ch == '}') {
+            if (charStack.empty()) {
+                return false; // Closing parenthesis without a corresponding opening parenthesis
+            }
+
+            char topChar = charStack.top();
+            charStack.pop();
+
+            if ((ch == ')' && topChar != '(') ||
+                (ch == ']' && topChar != '[') ||
+                (ch == '}' && topChar != '{')) {
+                return false; // Mismatched parentheses
+            }
+        }
+    }
+
+    return charStack.empty(); // Stack should be empty if parentheses are balanced
+}
+
+int main() {
+    string expression;
+
+    cout << "Enter an expression with parentheses: ";
+    getline(cin, expression);
+
+    if (areParenthesesBalanced(expression)) {
+        cout << "Parentheses are balanced." << endl;
+    } else {
+        cout << "Parentheses are not balanced." << endl;
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+10]  Write a program to implement minimum spanning tree using Prim’s algorithm.Write a program to implement Binary Search Tree Write a menu driven program to 
+Create a Binary Search tree (BST) 
+Traverse the tree in Inorder (Recursive) 
+ Search largest node 
+ Search Smallest node 
+ Count no. of nodes
+
+#include <iostream>
+#include <climits>
+
+using namespace std;
+
+// Node structure for Binary Search Tree
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+
+    Node(int value) : data(value), left(nullptr), right(nullptr) {}
+};
+
+class BinarySearchTree {
+private:
+    Node* root;
+
+public:
+    BinarySearchTree() : root(nullptr) {}
+
+    // Function to insert a value into the BST
+    Node* insert(Node* current, int value) {
+        if (current == nullptr) {
+            return new Node(value);
+        }
+
+        if (value < current->data) {
+            current->left = insert(current->left, value);
+        } else if (value > current->data) {
+            current->right = insert(current->right, value);
+        }
+
+        return current;
+    }
+
+    void insert(int value) {
+        root = insert(root, value);
+        cout << "Inserted " << value << " into the Binary Search Tree." << endl;
+    }
+
+    // Function to perform Inorder traversal of the BST (Recursive)
+    void inorderTraversal(Node* current) {
+        if (current != nullptr) {
+            inorderTraversal(current->left);
+            cout << current->data << " ";
+            inorderTraversal(current->right);
+        }
+    }
+
+    void inorderTraversal() {
+        cout << "Inorder Traversal (Recursive): ";
+        inorderTraversal(root);
+        cout << endl;
+    }
+
+    // Function to search for the largest node in the BST
+    Node* findLargest(Node* current) {
+        while (current->right != nullptr) {
+            current = current->right;
+        }
+        return current;
+    }
+
+    void findLargest() {
+        if (root == nullptr) {
+            cout << "Tree is empty. Cannot find the largest node." << endl;
+            return;
+        }
+
+        Node* largestNode = findLargest(root);
+        cout << "Largest Node in the Binary Search Tree: " << largestNode->data << endl;
+    }
+
+    // Function to search for the smallest node in the BST
+    Node* findSmallest(Node* current) {
+        while (current->left != nullptr) {
+            current = current->left;
+        }
+        return current;
+    }
+
+    void findSmallest() {
+        if (root == nullptr) {
+            cout << "Tree is empty. Cannot find the smallest node." << endl;
+            return;
+        }
+
+        Node* smallestNode = findSmallest(root);
+        cout << "Smallest Node in the Binary Search Tree: " << smallestNode->data << endl;
+    }
+
+    // Function to count the number of nodes in the BST
+    int countNodes(Node* current) {
+        if (current == nullptr) {
+            return 0;
+        }
+
+        return 1 + countNodes(current->left) + countNodes(current->right);
+    }
+
+    void countNodes() {
+        int count = countNodes(root);
+        cout << "Number of nodes in the Binary Search Tree: " << count << endl;
+    }
+};
+
+int main() {
+    BinarySearchTree bst;
+
+    int choice, value;
+
+    do {
+        cout << "\nMenu:\n"
+             << "1. Insert a value into BST\n"
+             << "2. Inorder Traversal (Recursive)\n"
+             << "3. Search for the Largest Node\n"
+             << "4. Search for the Smallest Node\n"
+             << "5. Count the Number of Nodes\n"
+             << "0. Exit\n"
+             << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert: ";
+                cin >> value;
+                bst.insert(value);
+                break;
+            case 2:
+                bst.inorderTraversal();
+                break;
+            case 3:
+                bst.findLargest();
+                break;
+            case 4:
+                bst.findSmallest();
+                break;
+            case 5:
+                bst.countNodes();
+                break;
+            case 0:
+                cout << "Exiting the program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Please enter a valid option.\n";
+        }
+
+    } while (choice != 0);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+11]  Write a program to create a Stack and perform the following operations on it  i)Push  ii) Pop   iii) Peek   iv) Display
+
+
+#include <iostream>
+#include <stack>
+
+using namespace std;
+
+class StackOperations {
+private:
+    stack<int> myStack;
+
+public:
+    // Function to push an element onto the stack
+    void pushElement(int value) {
+        myStack.push(value);
+        cout << "Pushed " << value << " onto the stack." << endl;
+    }
+
+    // Function to pop an element from the stack
+    void popElement() {
+        if (!myStack.empty()) {
+            cout << "Popped " << myStack.top() << " from the stack." << endl;
+            myStack.pop();
+        } else {
+            cout << "Stack underflow. Cannot pop from an empty stack." << endl;
+        }
+    }
+
+    // Function to peek at the top element of the stack
+    void peekElement() {
+        if (!myStack.empty()) {
+            cout << "Top element of the stack: " << myStack.top() << endl;
+        } else {
+            cout << "Stack is empty. Cannot peek." << endl;
+        }
+    }
+
+    // Function to display the elements of the stack
+    void displayStack() {
+        if (!myStack.empty()) {
+            cout << "Stack elements: ";
+            stack<int> tempStack = myStack;
+            while (!tempStack.empty()) {
+                cout << tempStack.top() << " ";
+                tempStack.pop();
+            }
+            cout << endl;
+        } else {
+            cout << "Stack is empty. Nothing to display." << endl;
+        }
+    }
+};
+
+int main() {
+    StackOperations stackOps;
+
+    int choice, value;
+
+    do {
+        cout << "\nMenu:\n"
+             << "1. Push an element\n"
+             << "2. Pop an element\n"
+             << "3. Peek at the top element\n"
+             << "4. Display the stack\n"
+             << "0. Exit\n"
+             << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter the value to push: ";
+                cin >> value;
+                stackOps.pushElement(value);
+                break;
+            case 2:
+                stackOps.popElement();
+                break;
+            case 3:
+                stackOps.peekElement();
+                break;
+            case 4:
+                stackOps.displayStack();
+                break;
+            case 0:
+                cout << "Exiting the program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Please enter a valid option.\n";
+        }
+
+    } while (choice != 0);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+12]  Write a program to represent a Doubly LL/ Singly LL/Circular LL and perform the following operations on it:  i) Insert    ii) Display    iii) Count
+
+#include <iostream>
+
+using namespace std;
+
+// Node structure for the Linked Lists
+struct Node {
+    int data;
+    Node* next;
+    Node* prev; // For Doubly Linked List
+
+    Node(int value) : data(value), next(nullptr), prev(nullptr) {}
+};
+
+class LinkedList {
+protected:
+    Node* head;
+
+public:
+    LinkedList() : head(nullptr) {}
+
+    // Function to insert a node at the end of the list
+    void insert(int value) {
+        Node* newNode = new Node(value);
+
+        if (head == nullptr) {
+            head = newNode;
+        } else {
+            Node* current = head;
+            while (current->next != nullptr) {
+                current = current->next;
+            }
+            current->next = newNode;
+        }
+
+        cout << "Inserted " << value << " into the list." << endl;
+    }
+
+    // Function to display the elements of the list
+    void display() {
+        Node* current = head;
+        cout << "List: ";
+        while (current != nullptr) {
+            cout << current->data << " ";
+            current = current->next;
+        }
+        cout << endl;
+    }
+
+    // Function to count the number of nodes in the list
+    int countNodes() {
+        int count = 0;
+        Node* current = head;
+        while (current != nullptr) {
+            count++;
+            current = current->next;
+        }
+        return count;
+    }
+};
+
+class DoublyLinkedList : public LinkedList {
+public:
+    // Function to insert a node at the end of the doubly linked list
+    void insert(int value) {
+        Node* newNode = new Node(value);
+
+        if (head == nullptr) {
+            head = newNode;
+        } else {
+            Node* current = head;
+            while (current->next != nullptr) {
+                current = current->next;
+            }
+            current->next = newNode;
+            newNode->prev = current;
+        }
+
+        cout << "Inserted " << value << " into the doubly linked list." << endl;
+    }
+};
+
+class CircularLinkedList : public LinkedList {
+public:
+    // Function to insert a node at the end of the circular linked list
+    void insert(int value) {
+        Node* newNode = new Node(value);
+
+        if (head == nullptr) {
+            head = newNode;
+            newNode->next = head;
+        } else {
+            Node* current = head;
+            while (current->next != head) {
+                current = current->next;
+            }
+            current->next = newNode;
+            newNode->next = head;
+        }
+
+        cout << "Inserted " << value << " into the circular linked list." << endl;
+    }
+};
+
+int main() {
+    SinglyLinkedList sll;
+    DoublyLinkedList dll;
+    CircularLinkedList cll;
+
+    int choice, value;
+
+    do {
+        cout << "\nMenu:\n"
+             << "1. Insert into Singly Linked List\n"
+             << "2. Insert into Doubly Linked List\n"
+             << "3. Insert into Circular Linked List\n"
+             << "4. Display Singly Linked List\n"
+             << "5. Display Doubly Linked List\n"
+             << "6. Display Circular Linked List\n"
+             << "7. Count Nodes in Singly Linked List\n"
+             << "8. Count Nodes in Doubly Linked List\n"
+             << "9. Count Nodes in Circular Linked List\n"
+             << "0. Exit\n"
+             << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert into Singly Linked List: ";
+                cin >> value;
+                sll.insert(value);
+                break;
+            case 2:
+                cout << "Enter value to insert into Doubly Linked List: ";
+                cin >> value;
+                dll.insert(value);
+                break;
+            case 3:
+                cout << "Enter value to insert into Circular Linked List: ";
+                cin >> value;
+                cll.insert(value);
+                break;
+            case 4:
+                sll.display();
+                break;
+            case 5:
+                dll.display();
+                break;
+            case 6:
+                cll.display();
+                break;
+            case 7:
+                cout << "Number of nodes in Singly Linked List: " << sll.countNodes() << endl;
+                break;
+            case 8:
+                cout << "Number of nodes in Doubly Linked List: " << dll.countNodes() << endl;
+                break;
+            case 9:
+                cout << "Number of nodes in Circular Linked List: " << cll.countNodes() << endl;
+                break;
+            case 0:
+                cout << "Exiting the program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Please enter a valid option.\n";
+        }
+
+    } while (choice != 0);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+13]  Write a program to perform Hashing on a set of numbers using Digit Extraction Method for Hashing and Linear Probe for collision resolution
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class LinearProbingHash {
+private:
+    vector<int> table;
+    int size;
+
+public:
+    LinearProbingHash(int tableSize) : size(tableSize), table(tableSize, -1) {}
+
+    // Hash function using Digit Extraction Method
+    int hashFunction(int key) {
+        int sum = 0;
+        while (key > 0) {
+            sum += key % 10;
+            key /= 10;
+        }
+        return sum % size;
+    }
+
+    // Function to insert a key into the hash table using linear probing
+    void insert(int key) {
+        int hash = hashFunction(key);
+        int initialHash = hash;
+
+        while (table[hash] != -1) {
+            hash = (hash + 1) % size; // Linear probing
+            if (hash == initialHash) {
+                cout << "Hash table is full. Cannot insert key " << key << ".\n";
+                return;
+            }
+        }
+
+        table[hash] = key;
+        cout << "Inserted key " << key << " at index " << hash << " in the hash table.\n";
+    }
+
+    // Function to display the hash table
+    void display() {
+        cout << "Hash Table: ";
+        for (int i = 0; i < size; ++i) {
+            if (table[i] != -1) {
+                cout << table[i] << " ";
+            } else {
+                cout << "- ";
+            }
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    int size, num, choice;
+
+    cout << "Enter the size of the hash table: ";
+    cin >> size;
+
+    LinearProbingHash hashTable(size);
+
+    do {
+        cout << "\nMenu:\n"
+             << "1. Insert a number into the hash table\n"
+             << "2. Display the hash table\n"
+             << "0. Exit\n"
+             << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter a number to insert into the hash table: ";
+                cin >> num;
+                hashTable.insert(num);
+                break;
+            case 2:
+                hashTable.display();
+                break;
+            case 0:
+                cout << "Exiting the program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Please enter a valid option.\n";
+        }
+
+    } while (choice != 0);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+14]  Write a program to perform Hashing using Fold Shift method for hashing and 
+Linear Probe method for collision resolution
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class LinearProbingHash {
+private:
+    vector<int> table;
+    int size;
+
+public:
+    LinearProbingHash(int tableSize) : size(tableSize), table(tableSize, -1) {}
+
+    // Hash function using Fold Shift Method
+    int hashFunction(int key) {
+        const int shiftValue = 2; // Shift value for Fold Shift Method
+        int hash = 0;
+
+        while (key > 0) {
+            int digit = key % 10;
+            hash = (hash << shiftValue) | digit;
+            key /= 10;
+        }
+
+        return hash % size;
+    }
+
+    // Function to insert a key into the hash table using linear probing
+    void insert(int key) {
+        int hash = hashFunction(key);
+        int initialHash = hash;
+
+        while (table[hash] != -1) {
+            hash = (hash + 1) % size; // Linear probing
+            if (hash == initialHash) {
+                cout << "Hash table is full. Cannot insert key " << key << ".\n";
+                return;
+            }
+        }
+
+        table[hash] = key;
+        cout << "Inserted key " << key << " at index " << hash << " in the hash table.\n";
+    }
+
+    // Function to display the hash table
+    void display() {
+        cout << "Hash Table: ";
+        for (int i = 0; i < size; ++i) {
+            if (table[i] != -1) {
+                cout << table[i] << " ";
+            } else {
+                cout << "- ";
+            }
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    int size, num, choice;
+
+    cout << "Enter the size of the hash table: ";
+    cin >> size;
+
+    LinearProbingHash hashTable(size);
+
+    do {
+        cout << "\nMenu:\n"
+             << "1. Insert a number into the hash table\n"
+             << "2. Display the hash table\n"
+             << "0. Exit\n"
+             << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter a number to insert into the hash table: ";
+                cin >> num;
+                hashTable.insert(num);
+                break;
+            case 2:
+                hashTable.display();
+                break;
+            case 0:
+                cout << "Exiting the program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Please enter a valid option.\n";
+        }
+
+    } while (choice != 0);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+15]   Write a program to create a Binary Search Tree and perform the following operations on it:  i) Insert   ii) Find Max    iii) Display
+
+
+#include <iostream>
+
+using namespace std;
+
+// Node structure for Binary Search Tree
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+
+    Node(int value) : data(value), left(nullptr), right(nullptr) {}
+};
+
+class BinarySearchTree {
+private:
+    Node* root;
+
+public:
+    BinarySearchTree() : root(nullptr) {}
+
+    // Function to insert a value into the BST
+    Node* insert(Node* current, int value) {
+        if (current == nullptr) {
+            return new Node(value);
+        }
+
+        if (value < current->data) {
+            current->left = insert(current->left, value);
+        } else if (value > current->data) {
+            current->right = insert(current->right, value);
+        }
+
+        return current;
+    }
+
+    void insert(int value) {
+        root = insert(root, value);
+        cout << "Inserted " << value << " into the Binary Search Tree." << endl;
+    }
+
+    // Function to find the maximum node in the BST
+    Node* findMax(Node* current) {
+        while (current->right != nullptr) {
+            current = current->right;
+        }
+        return current;
+    }
+
+    void findMax() {
+        if (root == nullptr) {
+            cout << "Tree is empty. Cannot find the maximum node." << endl;
+            return;
+        }
+
+        Node* maxNode = findMax(root);
+        cout << "Maximum Node in the Binary Search Tree: " << maxNode->data << endl;
+    }
+
+    // Function to perform Inorder traversal of the BST (Recursive)
+    void inorderTraversal(Node* current) {
+        if (current != nullptr) {
+            inorderTraversal(current->left);
+            cout << current->data << " ";
+            inorderTraversal(current->right);
+        }
+    }
+
+    void inorderTraversal() {
+        cout << "Inorder Traversal: ";
+        inorderTraversal(root);
+        cout << endl;
+    }
+};
+
+int main() {
+    BinarySearchTree bst;
+
+    int choice, value;
+
+    do {
+        cout << "\nMenu:\n"
+             << "1. Insert a value into BST\n"
+             << "2. Find Maximum Node\n"
+             << "3. Display Inorder Traversal\n"
+             << "0. Exit\n"
+             << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert: ";
+                cin >> value;
+                bst.insert(value);
+                break;
+            case 2:
+                bst.findMax();
+                break;
+            case 3:
+                bst.inorderTraversal();
+                break;
+            case 0:
+                cout << "Exiting the program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Please enter a valid option.\n";
+        }
+
+    } while (choice != 0);
+
+    return 0;
+}
